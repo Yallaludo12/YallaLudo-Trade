@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>طلبات | YallaLudo Trade</title>
+  <style>
+    body { font-family: "Cairo", sans-serif; background:#0d1117; color:#e6edf3; margin:0; padding:0; }
+    header { background:#111827; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; }
+    header h1 { color:#00bcd4; margin:0; font-size:1.2rem; }
+    nav a { color:#e6edf3; text-decoration:none; margin:0 8px; }
+    .container { max-width:1100px; margin:18px auto; padding:12px; }
+    table { width:100%; border-collapse:collapse; background:#161b22; border-radius:8px; overflow:hidden; }
+    th, td { padding:10px 12px; text-align:right; border-bottom:1px solid #222; font-size:0.95rem; }
+    th { background:#0f1724; color:#aeeef8; }
+    .actions button { margin-left:6px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer; }
+    .btn-primary { background:#00bcd4; color:#000; }
+    .btn-warning { background:#ffb86b; color:#000; }
+    .btn-danger { background:#ff6b6b; color:#000; }
+    .empty { text-align:center; padding:24px; opacity:0.8; }
+    .top-tools { display:flex; gap:8px; justify-content:flex-end; margin-bottom:12px; }
+    footer { text-align:center; padding:14px; border-top:1px solid #222; margin-top:18px; opacity:0.8; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>لوحة الطلبات</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="sell.html">البيع</a>
+      <a href="buy.html">الشراء</a>
+      <a href="broker.html">الوساطة</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="top-tools">
+      <button id="refreshBtn" class="btn-primary actions">تحديث</button>
+      <button id="exportBtn" class="btn-warning actions">تصدير JSON</button>
+      <button id="clearBtn" class="btn-danger actions">مسح الكل</button>
+    </div>
+
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>رقم</th>
+          <th>المنتج</th>
+          <th>السعر</th>
+          <th>المشتري</th>
+          <th>التواصل</th>
+          <th>الحالة</th>
+          <th>التاريخ</th>
+          <th>أفعال</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div id="empty" class="empty" style="display:none">لا توجد طلبات بعد</div>
+  </div>
+
+  <footer>© 2025 YallaLudo Trade</footer>
+
+  <script>
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const tbody = document.querySelector('#ordersTable tbody');
+      tbody.innerHTML = '';
+      if(orders.length === 0) {
+        document.getElementById('ordersTable').style.display = 'none';
+        document.getElementById('empty').style.display = 'block';
+        return;
+      }
+      document.getElementById('ordersTable').style.display = '';
+      document.getElementById('empty').style.display = 'none';
+      orders.forEach(o=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>#${o.id}</td>
+          <td>${o.product}</td>
+          <td>${o.price}$</td>
+          <td>${escapeHtml(o.buyer)}</td>
+          <td>${escapeHtml(o.contact)}</td>
+          <td id="status-${o.id}">${o.status}</td>
+          <td>${o.date}</td>
+          <td class="actions">
+            ${o.status === 'pending_payment' ? `<button class="btn-primary" onclick="updateStatus(${o.id},'paid')">تأكيد الدفع</button>` : ''}
+            ${o.status === 'paid' ? `<button class="btn-primary" onclick="updateStatus(${o.id},'shipped')">وضع كمشحون</button>` : ''}
+            ${o.status === 'shipped' ? `<button class="btn-primary" onclick="updateStatus(${o.id},'delivered')">تم التسليم</button>` : ''}
+            ${o.status === 'delivered' ? `<button class="btn-primary" onclick="updateStatus(${o.id},'completed')">إكمال الطلب</button>` : ''}
+            <button class="btn-warning" onclick="viewDetails(${o.id})">تفاصيل</button>
+            <button class="btn-danger" onclick="deleteOrder(${o.id})">حذف</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveOrders(orders) {
+      localStorage.setItem('orders', JSON.stringify(orders));
+      loadOrders();
+    }
+
+    function updateStatus(id, newStatus) {
+      let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      orders = orders.map(o => o.id === id ? {...o, status: newStatus} : o);
+      saveOrders(orders);
+      alert('تم تحديث الحالة إلى: ' + newStatus);
+    }
+
+    function deleteOrder(id) {
+      if(!confirm('هل تريد حذف الطلب؟')) return;
+      let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      orders = orders.filter(o => o.id !== id);
+      saveOrders(orders);
+    }
+
+    function viewDetails(id) {
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const o = orders.find(x=>x.id===id);
+      if(!o) return alert('لم يتم العثور على الطلب');
+      alert(`#${o.id}\\nالمنتج: ${o.product}\\nالسعر: ${o.price}$\\nالمشتري: ${o.buyer}\\nالتواصل: ${o.contact}\\nالحالة: ${o.status}\\nالتاريخ: ${o.date}`);
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadOrders);
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const blob = new Blob([JSON.stringify(orders, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'orders.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      if(!confirm('هل تريد مسح جميع الطلبات؟')) return;
+      localStorage.removeItem('orders');
+      loadOrders();
+    });
+
+    function escapeHtml(unsafe) {
+      return (''+unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    window.onload = loadOrders;
+  </script>
+</body>
+</html>
