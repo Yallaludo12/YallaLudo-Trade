@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بيع منتج | YallaLudo Trade</title>
+  <style>
+    body {
+      font-family: "Cairo", sans-serif;
+      background-color: #0d1117;
+      color: #e6edf3;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #111827;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      color: #00bcd4;
+      font-size: 1.5em;
+      margin: 0;
+    }
+
+    nav a {
+      color: #e6edf3;
+      text-decoration: none;
+      margin: 0 10px;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #00bcd4;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: #161b22;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      text-align: center;
+      color: #00bcd4;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background-color: #0d1117;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      border-top: 1px solid #222;
+      opacity: 0.7;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>YallaLudo Trade</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="sell.html">البيع</a>
+      <a href="#">الشراء</a>
+      <a href="#">الوساطة</a>
+      <a href="#">تواصل معنا</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>بيع منتج أو حساب</h2>
+    <form>
+      <label>نوع المنتج:</label>
+      <select>
+        <option>حساب يلا لودو</option>
+        <option>عملات / كوينز</option>
+        <option>هدايا / مسات</option>
+        <option>أخرى</option>
+      </select>
+
+      <label>وصف المنتج:</label>
+      <textarea rows="4" placeholder="اكتب تفاصيل المنتج أو الحساب هنا..."></textarea>
+
+      <label>السعر المطلوب:</label>
+      <input type="text" placeholder="مثال: 10 دولار أو ما يعادله">
+
+      <label>طريقة التواصل:</label>
+      <input type="text" placeholder="رقم واتساب / تليجرام / فيسبوك">
+
+      <button type="submit">إرسال طلب البيع</button>
+    </form>
+  </div>
+
+  <footer>
+    © 2025 YallaLudo Trade | All Rights Reserved
+  </footer>
+</body>
+</html>
